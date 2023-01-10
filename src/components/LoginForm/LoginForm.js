@@ -1,7 +1,8 @@
-import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+
+import Button from '../UI/Button';
 
 import { logIn } from '../../redux/auth/auth-operations';
 
@@ -36,8 +37,6 @@ const LoginForm = () => {
           initialValues={{ email: '', password: '' }}
           validationSchema={LoginSchema}
           onSubmit={(values, { resetForm }) => {
-            // console.log({ actions });
-
             const data = {
               email: values.email,
               password: values.password,
@@ -94,20 +93,16 @@ const LoginForm = () => {
                 </div>
               </div>
 
-              <button
-                type="submit"
-                disabled={!dirty || !isValid}
-                className={style.button}
-              >
+              <Button type="submit" disabled={!dirty || !isValid}>
                 ВХОД
-              </button>
+              </Button>
             </form>
           )}
         </Formik>
 
-        <div className={style.link}>
-          <Link to="/signup">РЕГИСТРАЦИЯ</Link>
-        </div>
+        <Button type="link" path="/signup">
+          РЕГИСТРАЦИЯ
+        </Button>
       </div>
     </>
   );

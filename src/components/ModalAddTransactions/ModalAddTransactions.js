@@ -22,6 +22,7 @@ import TextField from '@mui/material/TextField';
 
 import Toggler from 'components/Toggler';
 import CustomNumberFormat from 'components/CustomNumberFormat';
+import Button from '../UI/Button';
 
 const transactionCreationSchema = Yup.object().shape({
   typeTx: Yup.string().required(),
@@ -201,16 +202,14 @@ const ModalAddTransactions = () => {
             name="comment"
             placeholder="Комментарий"
           ></textarea>
-          <button className={styles.addTransactionBtn} type="submit">
-            Добавить
-          </button>
-          <button
-            className={styles.cancelTransactionBtn}
+          <Button type="submit">ДОБАВИТЬ</Button>
+          <Button
             type="button"
+            reverse
             onClick={() => dispatch(modalActions.hide())}
           >
-            Отмена
-          </button>
+            ОТМЕНА
+          </Button>
         </form>
       </div>
     </div>

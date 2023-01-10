@@ -1,0 +1,71 @@
+@import '../../styles/shared.scss';
+
+.button,
+.link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 280px;
+  height: 50px;
+  border-radius: 20px;
+  font-size: 18px;
+  font-family: $baseFont;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  overflow: hidden;
+
+  transition: background-color 300ms cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.button {
+  border: none;
+  background-color: #24cca7;
+  color: #ffffff;
+  
+  &:hover,
+  &:focus {
+    background-color: #21b393;
+  }
+  
+  &:disabled {
+    background-color: #24cca893;
+    color: #a8a7a7;
+    cursor: not-allowed;
+  }
+}
+
+.link {
+  margin: 20px auto 0;
+  border: 1px solid #4a56e2;
+  & a {
+    color: #4a56e2;
+    width: 100%;
+    padding: 10.5px 0;
+    text-align: center;
+    transition: background-color 300ms cubic-bezier(0.165, 0.84, 0.44, 1);
+  
+    &:hover,
+    &:focus {
+      border: none;
+      background-color: $indigo-accent;
+      color: $white;
+    }
+  }
+}
+
+.reverse {
+  @extend .button;
+  background-color: transparent;
+  margin: 20px auto 0;
+  border: 1px solid #4a56e2;
+  color: #4a56e2;
+  padding: 10.5px 0;
+  text-align: center;
+  transition: background-color 300ms cubic-bezier(0.165, 0.84, 0.44, 1);
+  &:hover,
+  &:focus {
+    border: none;
+    background-color: $indigo-accent;
+    color: $white;
+  }
+}

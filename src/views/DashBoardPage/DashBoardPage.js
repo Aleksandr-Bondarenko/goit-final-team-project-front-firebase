@@ -29,7 +29,8 @@ export default function DashBoardPage() {
       <div className={styles.blur}>
         <Header />
         <div className="container">
-          <div
+          <div>Private Page</div>
+          {/* <div
             className={
               isModalOpen
                 ? `${styles.hidden} ${styles.navTableWrap}`
@@ -89,7 +90,7 @@ export default function DashBoardPage() {
             <Route path={`${url}/statistics`}>
               <DiagramTab />
             </Route>
-          </div>
+          </div> */}
         </div>
       </div>
     </>

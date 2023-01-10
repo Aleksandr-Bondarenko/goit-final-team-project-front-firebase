@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 import { Formik, Form } from 'formik';
@@ -7,7 +7,7 @@ import * as yup from 'yup';
 
 import { LinearProgress } from '@mui/material';
 
-import ButtonRegister from '../ButtonRegister/ButtonRegister.js';
+import Button from '../UI/Button';
 
 import styles from './RegistrationForm.module.scss';
 
@@ -28,26 +28,29 @@ export default function RegistrationForm() {
       .min(1, 'Имя должно состоять минимум из 1 символа')
       .max(12, 'Имя должно состоять максимум из 12 символов')
       .typeError('Должно быть строкой')
-      .required('Обязательно'),
+      .required('Обязательно для заполнения'),
 
     password: yup
       .string()
       .min(6, 'Пароль должен состоять минимум из 6 символов')
       .max(14, 'Пароль должен состоять максимум из 12 символов')
       .typeError('Должно быть строкой')
-      .required('Обязательно'),
+      .required('Обязательно для заполнения'),
 
     confirmPassword: yup
       .string()
       .oneOf([yup.ref('password')], 'Пароли не совпадают')
-      .required('Обязательно'),
+      .required('Обязательно для заполнения'),
 
-    email: yup.string().email('Введите верный email').required('Обязательно'),
+    email: yup
+      .string()
+      .email('Введите верный email')
+      .required('Обязательно для заполнения'),
   });
 
-  const handleRegister = ({ name, email, password }) => {
-    dispatch(register({ name, email, password }));
-    history.push('/login');
+  const handleRegister = async ({ name, email, password }) => {
+    const isRegister = await dispatch(register({ name, email, password }));
+    !!isRegister && history.push('/');
   };
 
   return (
@@ -189,18 +192,13 @@ export default function RegistrationForm() {
               )}
             </div>
             <div className={styles.btnContainer}>
-              <ButtonRegister
-                className={styles.logoBtn}
-                onClick={handleSubmit}
-                disabled={!isValid && !dirty}
-                disable="sd"
-                type="submit"
-                text="Регистрация"
-              />
+              <Button disabled={!isValid && !dirty} type="submit">
+                РЕГИСТРАЦИЯ
+              </Button>
 
-              <NavLink to="/" className={styles.mainBtn}>
-                Вход
-              </NavLink>
+              <Button type="link" path="/">
+                ВХОД
+              </Button>
             </div>
           </Form>
         )}
