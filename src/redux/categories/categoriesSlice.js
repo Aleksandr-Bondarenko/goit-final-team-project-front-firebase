@@ -9,6 +9,7 @@ const categoriesSlice = createSlice({
     [fetchCategories.fulfilled]: (state, { payload }) => ({
       ...state,
       data: payload,
+      isLoading: false,
     }),
     [fetchCategories.pending]: (state) => ({
       ...state,

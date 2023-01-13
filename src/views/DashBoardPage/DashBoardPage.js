@@ -12,6 +12,7 @@ import Currency from 'components/Currency';
 import Header from 'components/Header';
 import DiagramTab from '../../components/DiagramTab/DiagramTab';
 import modalSelectors from 'redux/isModalOpen/isModalOpenSelectors';
+import { getCurrentUser } from 'redux/auth/auth-operations';
 
 export default function DashBoardPage() {
   const dispatch = useDispatch();
@@ -22,6 +23,7 @@ export default function DashBoardPage() {
 
   useEffect(() => {
     dispatch(fetchCategories());
+    // getCurrentUser('mk6XPXvALCWbsWffsvyd3SGEDd02');
   }, [dispatch]);
 
   return (

@@ -12,7 +12,7 @@ export default function TableHome() {
   const newTransaction = useSelector(getNewTransaction);
 
   useEffect(() => {
-    dispatch(fetchTransactions());
+    // dispatch(fetchTransactions());
   }, [dispatch, newTransaction]);
 
   return (

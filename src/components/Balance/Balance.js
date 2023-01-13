@@ -3,16 +3,18 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { fetchBalance } from 'redux/balance/balanceOperations';
 import getBalance from 'redux/balance/balanceSelectors';
+import { getUserBalance } from '../../redux/auth/auth-selectors';
 import getNewTransaction from 'redux/transaction/transactionSelectors';
 import styles from './Balance.module.scss';
 
 export default function Balance() {
   const dispatch = useDispatch();
-  const balance = useSelector(getBalance);
+  // const balance = useSelector(getBalance);
+  const balance = useSelector(getUserBalance);
   const newTransaction = useSelector(getNewTransaction);
 
   useEffect(() => {
-    dispatch(fetchBalance());
+    // dispatch(fetchBalance());
   }, [dispatch, newTransaction]);
 
   return (

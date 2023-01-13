@@ -14,7 +14,6 @@ import {
 import storage from 'redux-persist/lib/storage';
 
 import { authReducer } from 'redux/auth/auth-reducer';
-// import { wallet } from 'redux/transactions';
 
 import transactionReducer from './transaction/transactionSlice';
 import categoriesReducer from './categories/categoriesSlice';
@@ -32,15 +31,14 @@ const middleware = (getDefaultMiddleware) =>
   });
 
 const persistConfig = {
-  key: 'token',
+  key: 'logged-in-user-info',
   storage,
-  whitelist: ['token', 'refreshToken'],
+  whitelist: ['isLogin', 'user', 'token'],
 };
 
 const store = configureStore({
   reducer: {
     auth: persistReducer(persistConfig, authReducer),
-    // wallet,
     transactions: transactionsReducer,
     transactionsTable: transactionsTableReducer,
     balance: balanceReducer,
