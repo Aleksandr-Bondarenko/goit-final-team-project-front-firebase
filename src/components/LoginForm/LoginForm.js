@@ -94,14 +94,14 @@ const LoginForm = () => {
               </div>
 
               <Button type="submit" disabled={!dirty || !isValid}>
-                ВХОД
+                ВХІД
               </Button>
             </form>
           )}
         </Formik>
 
         <Button type="link" path="/signup">
-          РЕГИСТРАЦИЯ
+          РЕЄСТРАЦІЯ
         </Button>
       </div>
     </>

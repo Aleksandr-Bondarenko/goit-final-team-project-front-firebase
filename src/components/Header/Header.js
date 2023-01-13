@@ -4,11 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link, NavLink } from 'react-router-dom';
 import { useWindowSize } from '@react-hook/window-size';
 
-import {
-  getUserName,
-  getIsAuth,
-  // getUserEmail,
-} from '../../redux/auth/auth-selectors';
+import { getUserName, getIsAuth } from '../../redux/auth/auth-selectors';
 
 import { logout } from 'redux/auth/auth-operations';
 
@@ -20,7 +16,6 @@ import { ReactComponent as IconExit } from '../../icons/exit.svg';
 export default function Header() {
   const isAuthUser = useSelector(getIsAuth);
   const userName = useSelector(getUserName);
-  // const userEmail = useSelector(getUserEmail);
 
   const dispatch = useDispatch();
 
@@ -37,7 +32,7 @@ export default function Header() {
             </div>
           </Link>
           <div className={styles.userStatus}>
-            {(isAuthUser && <p>{userName}</p>) || <p>Имя</p>}
+            {isAuthUser && (<p>{userName}</p> || <p>Имя</p>)}
 
             <NavLink
               to="/"

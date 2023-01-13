@@ -139,13 +139,13 @@ const ModalAddTransactions = () => {
                     categories.map((category) => (
                       <li
                         className={styles.selectListItem}
-                        key={category._id}
+                        key={category.id}
                         onClick={() => {
-                          setNameCategory(category.nameCategory);
+                          setNameCategory(category.name);
                           setIsSelectOpen(false);
                         }}
                       >
-                        <p className={styles.option}>{category.nameCategory}</p>
+                        <p className={styles.option}>{category.name}</p>
                       </li>
                     ))}
                 </ul>

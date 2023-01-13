@@ -1,5 +1,5 @@
 import { toast } from 'react-toastify';
-import axios from 'axios';
+// import axios from 'axios';
 
 import 'react-toastify/dist/ReactToastify.css';
 import {
@@ -17,38 +17,33 @@ import {
   getCurrentUserSuccess,
 } from './auth-actions';
 
-import { token, fetchSignUp, fetchLogin, fetchLogout } from 'services/fetchApi';
+// import { token, fetchSignUp, fetchLogin, fetchLogout } from 'services/fetchApi';
+import { signUpUser, signInUser, signOutUser } from '../../firebase/authApi';
+import { addUserInfo, getUserInfo } from '../../firebase/firestoreApi';
 
 // registration
 const register = (credentials) => async (dispatch) => {
   dispatch(registerRequest());
-  try {
-    const response = await fetchSignUp(credentials);
-    dispatch(registerSuccess(response.data));
-  } catch (response) {
-    toast.error(response.response.status === 409 && 'Вы уже зарегистрированы', {
-      position: 'top-center',
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-    dispatch(registerError(response.message));
-  }
-};
 
-// set login
-const logIn = (credentials) => async (dispatch) => {
-  dispatch(loginRequest());
+  const { email, password, name } = credentials;
+
   try {
-    const response = await fetchLogin(credentials);
-    token.set(response.data.token);
-    dispatch(loginSuccess(response.data));
-  } catch (response) {
+    const user = await signUpUser(email, password, name);
+    dispatch(
+      registerSuccess({
+        email: user.email,
+        name: user.displayName,
+      }),
+    );
+    console.log('>>>user', user);
+    await addUserInfo(user.uid, name, email);
+    return user.uid;
+  } catch (error) {
+    const { code } = error;
+    dispatch(registerError(code));
+
     toast.error(
-      response.response.status === 401 && 'Неверно набраные пароль или почта!',
+      code === 'auth/email-already-in-use' && 'Такий користувач вже існує',
       {
         position: 'top-center',
         autoClose: 5000,
@@ -59,39 +54,88 @@ const logIn = (credentials) => async (dispatch) => {
         progress: undefined,
       },
     );
-    dispatch(loginError(response.message));
+  }
+};
+
+// set login
+const logIn = (credentials) => async (dispatch) => {
+  dispatch(loginRequest());
+
+  const { email, password } = credentials;
+
+  try {
+    const response = await signInUser(email, password);
+    const userInfo = await getUserInfo(response.user.uid);
+    console.log('>>>userInfo', userInfo);
+    const loginPayload = {
+      user: {
+        email: response.user.email,
+        name: response.user.displayName,
+        balance: 0,
+      },
+      token: response.user.accessToken,
+    };
+
+    dispatch(loginSuccess(loginPayload));
+  } catch (error) {
+    const { code } = error;
+    dispatch(loginError(code));
+
+    toast.error(
+      (code === 'auth/wrong-password' || code === 'auth/user-not-found') &&
+        'Такого користувача не існує, спробуйте ще',
+      {
+        position: 'top-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      },
+    );
   }
 };
 
 // get user name
-const getCurrentUser = () => (dispatch, getState) => {
-  const {
-    auth: { token: prsistedToken },
-  } = getState();
+const getCurrentUser = (userId) => async (dispatch, getState) => {
+  // const {
+  //   auth: { token: prsistedToken },
+  // } = getState();
 
-  if (!prsistedToken) {
-    return;
-  }
-  token.set(prsistedToken);
+  // if (!prsistedToken) {
+  //   return;
+  // }
+  // token.set(prsistedToken);
+  const state = getState();
+  console.log('>>>state', state);
 
-  dispatch(getCurrentUserRequest);
+  // dispatch(getCurrentUserRequest);
+  // try {
+  //   const state = getState();
+  //   console.log('>>>state', state);
+  //   const data = await getUserInfo(userId);
+  //   console.log('>>>data', data);
+  //   // dispatch(getCurrentUserSuccess(data));
+  // } catch (error) {
+  //   console.log('>>>error', error);
+  // }
 
-  axios
-    .get('users/current')
-    .then(({ data }) => dispatch(getCurrentUserSuccess(data)))
-    .catch((err) => getCurrentUserError(err.message));
+  // axios
+  //   .get('users/current')
+  //   .then(({ data }) => dispatch(getCurrentUserSuccess(data)))
+  //   .catch((err) => getCurrentUserError(err.message));
 };
 
 // exit
-const logout = () => async (dispatch) => {
+const logout = () => (dispatch) => {
   dispatch(logoutRequest());
 
   try {
-    await fetchLogout();
-    token.unset();
+    signOutUser();
     dispatch(logoutSuccess());
-  } catch ({ response }) {
-    token.unset();
+  } catch (error) {
+    console.error(error);
     dispatch(logoutSuccess());
   }
 };

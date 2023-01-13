@@ -49,7 +49,7 @@ export default function RegistrationForm() {
   });
 
   const handleRegister = async ({ name, email, password }) => {
-    const isRegister = await dispatch(register({ name, email, password }));
+    const isRegister = await dispatch(register({ email, password, name }));
     !!isRegister && history.push('/');
   };
 
@@ -193,11 +193,11 @@ export default function RegistrationForm() {
             </div>
             <div className={styles.btnContainer}>
               <Button disabled={!isValid && !dirty} type="submit">
-                РЕГИСТРАЦИЯ
+                РЕЄСТРАЦІЯ
               </Button>
 
               <Button type="link" path="/">
-                ВХОД
+                ВХІД
               </Button>
             </div>
           </Form>

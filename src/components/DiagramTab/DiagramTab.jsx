@@ -59,17 +59,17 @@ const DiagramTab = () => {
 
   useEffect(() => {
     dispatch(getCategories(token));
-    dispatch(getStatistics({ month, year }, token));
+    // dispatch(getStatistics({ month, year }, token));
   }, [dispatch, month, token, year]);
 
   const onMonthSelect = (e) => {
     dispatch(setMonth(e.value));
-    dispatch(getStatistics({ month: e.value, year }, token));
+    // dispatch(getStatistics({ month: e.value, year }, token));
   };
 
   const onYearSelect = (e) => {
     dispatch(setYear(e.value));
-    dispatch(getStatistics({ month, year: e.value }, token));
+    // dispatch(getStatistics({ month, year: e.value }, token));
   };
 
   const income = transactions.reduce((acc, transaction) => {
