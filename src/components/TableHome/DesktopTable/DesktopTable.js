@@ -5,12 +5,15 @@ import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { format, isAfter } from 'date-fns';
+
 import { useSelector } from 'react-redux';
 
 import styles from './DesktopTable.module.scss';
-import getTransactionsTable from 'redux/transactionsTable/transactionsTableSelectors';
+
+import transactionsSelectors from 'redux/transactionsTable/transactionsTableSelectors';
 import categoriesActions from 'redux/categories/categoriesSelectors';
+
+import { sortingTransactionsByDate } from '../../../utilities/sortingFunctions';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -50,27 +53,27 @@ const columns = [
     label: 'Дата',
     align: 'left',
     pl: 20,
-    format: (value) => format(new Date(value), 'dd.MM.yy'),
+    format: (value) => value.split(',')[0],
   },
   {
-    id: 'typeTx',
+    id: 'type',
     label: 'Тип',
     align: 'center',
     format: (value) => (value === 'income' ? '+' : '-'),
   },
   {
-    id: 'categoryId',
-    label: 'Категория',
+    id: 'category',
+    label: 'Категорія',
     align: 'left',
   },
   {
     id: 'comment',
-    label: 'Комментарий',
+    label: 'Коментар',
     align: 'left',
   },
   {
     id: 'sum',
-    label: 'Сумма',
+    label: 'Сума',
     align: 'right',
     format: (value) => value.toFixed(2),
   },
@@ -83,22 +86,42 @@ const columns = [
 ];
 
 export default function DesktopTable() {
-  const data = useSelector(getTransactionsTable);
+  const data = useSelector(transactionsSelectors.getTransactions);
+  const isLoading = useSelector(transactionsSelectors.getTransactionsIsLoading);
   const categories = useSelector(categoriesActions.getCategories);
-  const sortedData = [...data].sort((a, b) =>
-    isAfter(new Date(a.date), new Date(b.date)) ? -1 : 1,
-  );
+
+  const sortedData = sortingTransactionsByDate(data);
+
+  const generateBalanceValuesForTransactions = (data) => {
+    const initialBalance = 0;
+    const balanceValues = [];
+    data.reduce((acc, item) => {
+      if (item.typeTx === 'income') {
+        balanceValues.push(acc + item.sum);
+        return acc + item.sum;
+      } else {
+        balanceValues.push(acc - item.sum);
+        return acc - item.sum;
+      }
+    }, initialBalance);
+
+    return balanceValues;
+  };
+
+  const balancesArr = generateBalanceValuesForTransactions(sortedData);
+
   const rows = sortedData.map(
-    ({ _id, date, typeTx, categoryId, comment, sum, balance }) => {
-      const category = categories.find((el) => el._id === categoryId);
+    ({ id, date, typeTx, categoryId, comment, sum }, idx) => {
+      const category = categories.find((el) => el.id === categoryId);
+
       return {
-        _id,
+        id,
         date,
-        typeTx,
-        categoryId: category?.nameCategory,
+        type: typeTx,
+        category: category?.name,
         comment,
         sum,
-        balance,
+        balance: balancesArr[idx],
       };
     },
   );
@@ -127,7 +150,7 @@ export default function DesktopTable() {
                 <StyledTableRow
                   hover //hover?
                   tabIndex={-1}
-                  key={row._id}
+                  key={row.id}
                   className={styles.tableRow}
                 >
                   {columns.map((column) => {
@@ -138,7 +161,7 @@ export default function DesktopTable() {
                           key={column.id}
                           align={column.align}
                           sx={
-                            row.typeTx === 'income'
+                            row.type === 'income'
                               ? `color: #24cca7`
                               : `color: #ff6596`
                           }
@@ -159,11 +182,12 @@ export default function DesktopTable() {
           </TableBody>
         </Table>
       </TableContainer>
-      {data.length === 0 && (
+      {isLoading && <div>Loading...</div>}
+      {data.length === 0 && !isLoading && (
         <div className={styles.plug}>
           <p className={styles.plugText}>
-            Для того чтобы вести учёт необходимо ввести данные после нажатия
-            кнопки "<span className={styles.plugPlus}>+</span>"
+            Вітаю! Додай свою першу транзакцію. "
+            <span className={styles.plugPlus}>+</span>"
           </p>
         </div>
       )}

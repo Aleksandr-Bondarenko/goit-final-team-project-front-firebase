@@ -17,7 +17,7 @@ const Toggler = ({ selected, toggleSelected }) => {
           isTransactionPositive ? styles.activeProfit : styles.plainProfit
         }
       >
-        Доход
+        Дохід
       </p>
       <div className={styles.container} onClick={toggleSelected}>
         <button
@@ -36,7 +36,7 @@ const Toggler = ({ selected, toggleSelected }) => {
           isTransactionNegative ? styles.activeExpenses : styles.plainExpenses
         }
       >
-        Расход
+        Витрата
       </p>
     </div>
   );

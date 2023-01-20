@@ -38,11 +38,47 @@ export const getUserInfo = async (userId) => {
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      console.log('Document data:', docSnap.data());
       return docSnap.data();
     } else {
       throw new Error('No such document!');
     }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const updateUserInfo = async (userId, balance) => {
+  try {
+    const docRef = doc(db, 'users', userId);
+    await setDoc(docRef, { balance: balance }, { merge: true });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const addNewTransaction = async (userId, transaction) => {
+  try {
+    const docRef = doc(db, 'transactions', userId);
+    let response = (await getDoc(docRef)).data();
+    if (!response || !response.data) {
+      response = { data: [] };
+    }
+    response.data.push(transaction);
+    await setDoc(docRef, response);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getAllTransactions = async (userId) => {
+  try {
+    const docRef = doc(db, 'transactions', userId);
+    let response = (await getDoc(docRef)).data();
+    if (!response || !response.data) {
+      response = { data: [] };
+    }
+    return response.data;
   } catch (error) {
     console.error(error);
   }

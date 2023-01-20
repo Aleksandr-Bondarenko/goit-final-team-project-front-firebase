@@ -20,25 +20,23 @@ export default function Currency() {
     const lastData = JSON.parse(localStorage.getItem('currency'));
     const lastFetchTime = JSON.parse(localStorage.getItem('fetch time'));
 
-    if (lastData && Date.now() - lastFetchTime < 1800000) {
-      setCurrencyData(lastData);
-    } else {
-      // const instance = axios.create({
-      //   baseURL: '',
-      //   headers: '',
-      // });
-      // instance
-      //   .get(
-      //     'https://api.privatbank.ua/p24api/pubinfo?exchange&json&coursid=11',
-      //   )
-      //   .then((r) => {
-      //     const data = r.data.filter((el) => el.ccy !== 'BTC');
-      //     setCurrencyData(data);
-      //     localStorage.setItem('currency', JSON.stringify(data));
-      //     localStorage.setItem('fetch time', JSON.stringify(Date.now()));
-      //   })
-      //   .catch((error) => console.log(error)); // ADD NOTIFICATION
-    }
+    // if (lastData && Date.now() - lastFetchTime < 1800000) {
+    //   setCurrencyData(lastData);
+    // } else {
+    const instance = axios.create({
+      baseURL: '',
+      headers: '',
+    });
+    instance
+      .get('https://api.privatbank.ua/p24api/pubinfo?exchange&json&coursid=11')
+      .then((r) => {
+        const data = r.data.filter((el) => el.ccy !== 'BTC');
+        setCurrencyData(data);
+        localStorage.setItem('currency', JSON.stringify(data));
+        localStorage.setItem('fetch time', JSON.stringify(Date.now()));
+      })
+      .catch((error) => console.log(error)); // ADD NOTIFICATION
+    // }
   }, [setCurrencyData]);
 
   return (

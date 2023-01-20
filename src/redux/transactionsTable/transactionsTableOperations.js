@@ -1,12 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { getAllTransactions } from '../../firebase/firestoreApi';
 
 export const fetchTransactions = createAsyncThunk(
   'finance/fetchTransactions',
-  async (_, { rejectWithValue }) => {
+  async (userId, { rejectWithValue }) => {
     try {
-      const transactions = await axios.get('/api/transactions');
-      return transactions.data;
+      return await getAllTransactions(userId);
     } catch (error) {
       return rejectWithValue(error.message);
     }

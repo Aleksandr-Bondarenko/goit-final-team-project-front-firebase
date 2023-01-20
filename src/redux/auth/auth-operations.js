@@ -12,14 +12,20 @@ import {
   logoutRequest,
   logoutSuccess,
   // logoutError,
-  getCurrentUserError,
-  getCurrentUserRequest,
-  getCurrentUserSuccess,
+  getUserInfoRequest,
+  getUserInfoSuccess,
+  getUserInfoError,
+  updateUserBalanceRequest,
+  updateUserBalanceSuccess,
+  updateUserBalanceError,
 } from './auth-actions';
 
-// import { token, fetchSignUp, fetchLogin, fetchLogout } from 'services/fetchApi';
 import { signUpUser, signInUser, signOutUser } from '../../firebase/authApi';
-import { addUserInfo, getUserInfo } from '../../firebase/firestoreApi';
+import {
+  addUserInfo,
+  getUserInfo,
+  updateUserInfo,
+} from '../../firebase/firestoreApi';
 
 // registration
 const register = (credentials) => async (dispatch) => {
@@ -35,7 +41,6 @@ const register = (credentials) => async (dispatch) => {
         name: user.displayName,
       }),
     );
-    console.log('>>>user', user);
     await addUserInfo(user.uid, name, email);
     return user.uid;
   } catch (error) {
@@ -65,18 +70,12 @@ const logIn = (credentials) => async (dispatch) => {
 
   try {
     const response = await signInUser(email, password);
-    const userInfo = await getUserInfo(response.user.uid);
-    console.log('>>>userInfo', userInfo);
-    const loginPayload = {
-      user: {
-        email: response.user.email,
-        name: response.user.displayName,
-        balance: 0,
-      },
+    const payload = {
+      uid: response.user.uid,
       token: response.user.accessToken,
     };
 
-    dispatch(loginSuccess(loginPayload));
+    dispatch(loginSuccess(payload));
   } catch (error) {
     const { code } = error;
     dispatch(loginError(code));
@@ -99,32 +98,15 @@ const logIn = (credentials) => async (dispatch) => {
 
 // get user name
 const getCurrentUser = (userId) => async (dispatch, getState) => {
-  // const {
-  //   auth: { token: prsistedToken },
-  // } = getState();
-
-  // if (!prsistedToken) {
-  //   return;
-  // }
-  // token.set(prsistedToken);
-  const state = getState();
-  console.log('>>>state', state);
-
-  // dispatch(getCurrentUserRequest);
-  // try {
-  //   const state = getState();
-  //   console.log('>>>state', state);
-  //   const data = await getUserInfo(userId);
-  //   console.log('>>>data', data);
-  //   // dispatch(getCurrentUserSuccess(data));
-  // } catch (error) {
-  //   console.log('>>>error', error);
-  // }
-
-  // axios
-  //   .get('users/current')
-  //   .then(({ data }) => dispatch(getCurrentUserSuccess(data)))
-  //   .catch((err) => getCurrentUserError(err.message));
+  // const state = getState();
+  dispatch(getUserInfoRequest());
+  try {
+    const data = await getUserInfo(userId);
+    const payload = { name: data.name, balance: data.balance };
+    dispatch(getUserInfoSuccess(payload));
+  } catch (error) {
+    dispatch(getUserInfoError(error.message));
+  }
 };
 
 // exit
@@ -140,4 +122,15 @@ const logout = () => (dispatch) => {
   }
 };
 
-export { register, logIn, getCurrentUser, logout };
+const setBalance = (userId, balance) => async (dispatch) => {
+  dispatch(updateUserBalanceRequest());
+  try {
+    updateUserInfo(userId, balance);
+    dispatch(updateUserBalanceSuccess(balance));
+  } catch (error) {
+    console.error(error);
+    dispatch(updateUserBalanceError(error));
+  }
+};
+
+export { register, logIn, getCurrentUser, logout, setBalance };

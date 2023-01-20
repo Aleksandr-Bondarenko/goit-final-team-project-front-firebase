@@ -20,7 +20,7 @@ import categoriesReducer from './categories/categoriesSlice';
 
 import transactionsReducer from './statistics/statisticsSlice';
 import transactionsTableReducer from './transactionsTable/transactionsTableSlice';
-import balanceReducer from './balance/balanceSlice';
+// import balanceReducer from './balance/balanceSlice';
 import isModalOpenReducer from './isModalOpen/isModalOpenSlice';
 
 const middleware = (getDefaultMiddleware) =>
@@ -33,16 +33,16 @@ const middleware = (getDefaultMiddleware) =>
 const persistConfig = {
   key: 'logged-in-user-info',
   storage,
-  whitelist: ['isLogin', 'user', 'token'],
+  whitelist: ['uid', 'token'],
 };
 
 const store = configureStore({
   reducer: {
     auth: persistReducer(persistConfig, authReducer),
-    transactions: transactionsReducer,
+    transactions: transactionsReducer, //remove
     transactionsTable: transactionsTableReducer,
-    balance: balanceReducer,
-    transaction: transactionReducer,
+    // balance: balanceReducer,
+    transaction: transactionReducer, // remove
     categories: categoriesReducer,
     modal: isModalOpenReducer,
   },

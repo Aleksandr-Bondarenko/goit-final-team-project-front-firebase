@@ -1,11 +1,11 @@
 import { isAfter, format } from 'date-fns/esm';
 import styles from './MobileTable.module.scss';
 import { useSelector } from 'react-redux';
-import getTransactionsTable from 'redux/transactionsTable/transactionsTableSelectors';
+import transactionsSelectors from '../../../redux/transactionsTable/transactionsTableSelectors';
 import categoriesActions from 'redux/categories/categoriesSelectors';
 
 export default function MobileTable() {
-  const data = useSelector(getTransactionsTable);
+  const data = useSelector(transactionsSelectors.getTransactionsTable);
   const categories = useSelector(categoriesActions.getCategories);
   const sortedData = [...data].sort((a, b) =>
     isAfter(new Date(a.date), new Date(b.date)) ? -1 : 1,

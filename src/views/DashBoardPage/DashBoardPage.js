@@ -13,6 +13,7 @@ import Header from 'components/Header';
 import DiagramTab from '../../components/DiagramTab/DiagramTab';
 import modalSelectors from 'redux/isModalOpen/isModalOpenSelectors';
 import { getCurrentUser } from 'redux/auth/auth-operations';
+import { getUserId } from '../../redux/auth/auth-selectors';
 
 export default function DashBoardPage() {
   const dispatch = useDispatch();
@@ -20,11 +21,12 @@ export default function DashBoardPage() {
   const { pathname } = useLocation();
 
   const isModalOpen = useSelector(modalSelectors.getIsModalOpen);
+  const userId = useSelector(getUserId);
 
   useEffect(() => {
     dispatch(fetchCategories());
-    // getCurrentUser('mk6XPXvALCWbsWffsvyd3SGEDd02');
-  }, [dispatch]);
+    dispatch(getCurrentUser(userId));
+  }, [dispatch, userId]);
 
   return (
     <>
