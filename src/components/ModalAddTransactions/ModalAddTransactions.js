@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
+import uniqid from 'uniqid';
+
 import { fetchCategories } from 'redux/categories/categoriesOperations';
 import categoriesActions from 'redux/categories/categoriesSelectors';
+import { getUserId, getUserBalance } from '../../redux/auth/auth-selectors';
 import { createTransaction } from 'redux/transaction/transactionOperations';
 import modalActions from 'redux/isModalOpen/isModalOpenActions';
-import styles from './ModalAddTransactions.module.scss';
+import { setNewTransaction } from '../../redux/transactionsTable/transactionsTableSlice';
+import { setBalance } from '../../redux/auth/auth-operations';
 
+import styles from './ModalAddTransactions.module.scss';
 import 'styles/globalMUI.scss';
 
 import { ReactComponent as CloseModalIcon } from 'icons/CloseModalIcon.svg';
@@ -39,23 +44,20 @@ const ModalAddTransactions = () => {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [nameCategory, setNameCategory] = useState('');
   const [comment, setComment] = useState('');
+  const [categoryId, setCategoryId] = useState('');
 
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  const year = date.getFullYear();
-
-  const parsedDate = [
-    day < 10 ? '0' + day : day,
-    month < 10 ? '0' + month : month,
-    year,
-  ].join('.');
+  const categories = useSelector(categoriesActions.getCategories);
+  const userId = useSelector(getUserId);
+  const totalBalance = useSelector(getUserBalance);
 
   const initial = {
-    date: parsedDate,
+    // date: getParsedDate(date),
+    date,
     typeTx,
     sum: Number(sum),
     comment,
     nameCategory,
+    categoryId,
   };
   const dispatch = useDispatch();
 
@@ -63,14 +65,24 @@ const ModalAddTransactions = () => {
     dispatch(fetchCategories());
   }, [dispatch]);
 
-  const categories = useSelector(categoriesActions.getCategories);
-
   const formik = useFormik({
     initialValues: initial,
     enableReinitialize: true,
     validationSchema: transactionCreationSchema,
     onSubmit: (values) => {
-      dispatch(createTransaction(values));
+      const newTransaction = {
+        ...values,
+        date: date.toLocaleString(),
+        id: uniqid(),
+      };
+      dispatch(createTransaction({ userId, newTransaction }));
+      dispatch(setNewTransaction(newTransaction));
+
+      const updatedBalance =
+        newTransaction.typeTx === 'income'
+          ? totalBalance + newTransaction.sum
+          : totalBalance - newTransaction.sum;
+      dispatch(setBalance(userId, updatedBalance));
     },
   });
 
@@ -100,6 +112,12 @@ const ModalAddTransactions = () => {
     setSum(value);
   };
 
+  const categorySelectHandler = (category) => {
+    setNameCategory(category.name);
+    setCategoryId(category.id);
+    setIsSelectOpen(false);
+  };
+
   return (
     <div className="container">
       <div className={styles.formWrapper}>
@@ -109,7 +127,7 @@ const ModalAddTransactions = () => {
         >
           <CloseModalIcon />
         </button>
-        <p className={styles.formCall}>Добавить транзакцию</p>
+        <p className={styles.formCall}>Додати транзакцію</p>
         <form className={styles.form} onSubmit={formik.handleSubmit}>
           <Toggler selected={typeTx} toggleSelected={handleToggle} />
           <div className={styles.selectWrapper}>
@@ -120,7 +138,7 @@ const ModalAddTransactions = () => {
                   : styles.hidden
               }
               value={nameCategory ? nameCategory : ''}
-              placeholder="Выберите категорию"
+              placeholder="Оберіть категорію"
               disabled
             />
             <button
@@ -140,10 +158,7 @@ const ModalAddTransactions = () => {
                       <li
                         className={styles.selectListItem}
                         key={category.id}
-                        onClick={() => {
-                          setNameCategory(category.name);
-                          setIsSelectOpen(false);
-                        }}
+                        onClick={() => categorySelectHandler(category)}
                       >
                         <p className={styles.option}>{category.name}</p>
                       </li>
@@ -176,7 +191,7 @@ const ModalAddTransactions = () => {
                 desktopModeMediaQuery="@media (min-width: 320px)"
                 classes={{ notchedOutline: styles.noBorder }}
                 mask={mask}
-                minDate={new Date()}
+                // minDate={new Date()}
                 value={date}
                 onChange={(date) => {
                   setDate(date);
@@ -200,15 +215,16 @@ const ModalAddTransactions = () => {
             onChange={onCommentChange}
             id="comment"
             name="comment"
-            placeholder="Комментарий"
+            placeholder="Місце для коментаря"
           ></textarea>
-          <Button type="submit">ДОБАВИТЬ</Button>
+
+          <Button type="submit">ДОДАТИ</Button>
           <Button
             type="button"
             reverse
             onClick={() => dispatch(modalActions.hide())}
           >
-            ОТМЕНА
+            СКАСУВАТИ
           </Button>
         </form>
       </div>

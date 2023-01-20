@@ -4,11 +4,18 @@ const { createSlice } = require('@reduxjs/toolkit');
 
 const transactionsSlice = createSlice({
   name: 'transactionsTable',
-  initialState: { data: [], isLoading: false, error: null },
+  initialState: { data: [], isLoading: true, error: null },
+  reducers: {
+    setNewTransaction: (state, { payload }) => ({
+      ...state,
+      data: [...state.data, payload],
+    }),
+  },
   extraReducers: {
     [fetchTransactions.fulfilled]: (state, { payload }) => ({
       ...state,
       data: payload,
+      isLoading: false,
     }),
     [fetchTransactions.pending]: (state) => ({
       ...state,
@@ -21,5 +28,7 @@ const transactionsSlice = createSlice({
     }),
   },
 });
+
+export const { setNewTransaction } = transactionsSlice.actions;
 
 export default transactionsSlice.reducer;

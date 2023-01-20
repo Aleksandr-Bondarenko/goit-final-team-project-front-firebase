@@ -4,16 +4,16 @@ import { useEffect } from 'react';
 
 import MobileTable from './MobileTable';
 import DesktopTable from './DesktopTable';
-import getNewTransaction from 'redux/transaction/transactionSelectors';
+import { getUserId } from '../../redux/auth/auth-selectors';
 import { fetchTransactions } from 'redux/transactionsTable/transactionsTableOperations';
 
 export default function TableHome() {
   const dispatch = useDispatch();
-  const newTransaction = useSelector(getNewTransaction);
+  const userId = useSelector(getUserId);
 
   useEffect(() => {
-    // dispatch(fetchTransactions());
-  }, [dispatch, newTransaction]);
+    dispatch(fetchTransactions(userId));
+  }, [dispatch, userId]);
 
   return (
     <Media query="(max-width: 768px)">

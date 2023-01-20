@@ -5,6 +5,7 @@ const { createSlice } = require('@reduxjs/toolkit');
 const balanceSlice = createSlice({
   name: 'balance',
   initialState: { value: 0, isLoading: false, error: null },
+  reducers: {},
   extraReducers: {
     [fetchBalance.fulfilled]: (state, { payload }) => ({
       ...state,

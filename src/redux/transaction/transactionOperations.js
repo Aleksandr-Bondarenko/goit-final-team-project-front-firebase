@@ -1,16 +1,13 @@
-import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 
+import { addNewTransaction } from '../../firebase/firestoreApi';
+
 export const createTransaction = createAsyncThunk(
   'transaction/createTransaction',
-  async (newTransaction, { rejectWithValue }) => {
+  async ({ userId, newTransaction }, { rejectWithValue }) => {
     try {
-      const transactions = await axios.post(
-        '/api/transactions',
-        newTransaction,
-      );
-      return transactions.data;
+      addNewTransaction(userId, newTransaction);
     } catch (error) {
       toast.error(error.response.data.message);
       return rejectWithValue(error.message);

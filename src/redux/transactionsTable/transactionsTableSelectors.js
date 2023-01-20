@@ -1,3 +1,10 @@
-const getTransactionsTable = (state) => state.transactionsTable.data;
+const getTransactions = (state) => state.transactionsTable.data;
 
-export default getTransactionsTable;
+const getTransactionsIsLoading = (state) => state.transactionsTable.isLoading;
+
+const transactionsSelectors = {
+  getTransactions,
+  getTransactionsIsLoading,
+};
+
+export default transactionsSelectors;
